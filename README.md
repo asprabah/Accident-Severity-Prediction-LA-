@@ -1,1 +1,1 @@
-# Accident-Severity-Prediction-LA-
+# Accident-Severity-Prediction-LA
