@@ -19,28 +19,16 @@ Scrubbed and cleansed 2.3 million data to predict the level of severity for road
 
 The code, `accident_LA.R`, begins by importing necessary R libraries:
 ```
-library(dplyr)
-library(tidyverse)
-library(broom)
-library(ggmap)
-library(moments)
-library(gbm)
 library(rpart)
-library(randomforest)
-library(glmnet)
+library(gbm)
+library(ada)
+library(randomForest)
+library(caret)
+library(car)
+library(ggmap)
+library(ggplot2)
 ```
-- *NOTE 1: The CitiBike data pulled can also be pulled using API in json format.*  
-- *NOTE 2: The data may change over time and the results may not be same everytime.*
-
-Day, month and Year are extracted
-```
-#extracting date,month,year,time
-fulln_model$month = months(as.Date(fulln_model$date))
-fulln_model$day = weekdays(as.Date(fulln_model$date))
-tm1.lt <- as.POSIXlt(fulln$starttime)
-fulln_model$hour=tm1.lt$hour
-```
-
+- *NOTE : The data may change over time and the results may not be same everytime.*
 
 ### Data Visualization:
 ```
@@ -48,82 +36,37 @@ fulln_model$hour=tm1.lt$hour
 
 library(ggmap)
 ggmap::register_google(key = "YOUR KEY")
+#taking Los angeles map from googlemaps and plotting all datapoints in the map
+p <- ggmap(get_googlemap(maptype="terrain",zoom=11,center = c(lon = -118.28904, lat = 34.078926)))
+p + geom_point(aes(x =Start_Lng , y =Start_Lat ),colour = 'red', incidents, alpha=0.25, size = 0.5)
 
-p <- ggmap(get_googlemap(maptype="terrain",zoom=11,center = c(lon = 74.0431, lat = 40.7178)))
-p + geom_point(aes(x =Start_Lng , y =Start_Lat ),colour = 'black', station, alpha=0.25, size = 0.5) + 
-  theme(legend.position="bottom")
-p + geom_point(aes(x =Start_Lng , y =Start_Lat ),colour = 'red', checkout, alpha=0.25, size = 0.5) + 
-  theme(legend.position="bottom")
+i2lsev <-subset(incidents,incidents$Severity=='1') #subsetting only low severity
+i2hsev<-subset(incidents,incidents$Severity=='2')  #subsetting only high severity
   
 Finally, we visualize the data.  We save our plot as a `.jpeg` image:
 ```
+
 The output from this code is shown below:
-![Image of Plot](images/GMAPS.jpeg)
-
-![Image of Plot](images/trip_hr.png)
-
-```
-#---------------------Weather Data merge-------------------------------------------------
-darksky=read.csv('G:/project/dark_sky.csv', header=TRUE)
-fulln_model=fulln[,c("starttime","stoptime","start.station.id","end.station.id","date")]
-
-#extracting date,month,year,time
-fulln_model$month = months(as.Date(fulln_model$date))
-fulln_model$day = weekdays(as.Date(fulln_model$date))
-tm1.lt <- as.POSIXlt(fulln$starttime)
-fulln_model$hour=tm1.lt$hour
-
-#extracting date,month,year,time for weather
-darksky$date = as.Date(darksky$time, format = "%Y-%m-%d")
-tm2.lt <- as.POSIXlt(darksky$time)
-darksky$hour=tm2.lt$hour
-
-#remove unwanted columns weather
-darksky=subset(darksky, select=-c(summary,icon,precipIntensity,precipProbability,precipType,precipAccumulation,                                ozone,uvIndex,windGust,windBearing,cloudCover,apparentTemperature))
-darksky=darksky[!duplicated(darksky$time), ]
-
-#Merging weather with model
-darksky$dthr=paste(darksky$date,darksky$hour, sep="")
-fulln_model$dthr=paste(fulln_model$date,fulln_model$hour, sep="")
-fi=merge(fulln_model,darksky,by.x = "dthr",by.y = "dthr")
-```
-The merge of weather with CitiBike data is shown:
-
-![Image of Plot](images/merge.jpg)
-
-#### Predictor Influence on each model:
-
-![Image of Plot](images/after_pred.jpg)
-
----
-
-#### Model Framework:
-
-![Image of Plot](images/model_frame.JPG)
-
+![Image of Plot](images/map_sev.jpg)
 
 #### Best Model Result
 
 ```
-#------------------------Gradient Boosting results-------------------------------
-
-library(gbm)
-gbmboosting <- gbm(checkout_count_hr~.,data =  train, n.trees=500, interaction.depth = 3,shrinkage = 0.05)
-gbmpred <- round(predict(gbmboosting, newdata = train, n.trees = 500))
-
-#mean(gbmpred==train$checkout_count_hr)
-summary(gbmboosting)
-eval_results(train$checkout_count_hr,gbmpred,train)
+#randomforest
+library(randomForest)
+set.seed(80)
+rfmodel <-  randomForest(Severity ~ ., train.data, importance = T )
+plot(rfmodel)
 ```
 
-![Image of Plot](images/boost_result.jpg)
+![Image of Plot](images/variable_imp.jpeg)
 
 ---
 
 ## How to Run the Code using R Studio
 *1. Click on File->Open*
 
-*2. Choose directory where `citibike.R` is stored*
+*2. Choose directory where `accident_LA.R` is stored*
 
 *3. Click on run or Ctrl+Enter*
 
@@ -131,5 +74,6 @@ eval_results(train$checkout_count_hr,gbmpred,train)
 
 ---
 
-## Suggestions
-Spatial relation with neighboring stations can be considered.The predicted checkout frequency can be converted to a classification namely high, mid and low therevy incresing the prediction accuracy. Pricing of Citi Bikes can be taken into consideration for comparison. Special occasions or global situations may fluctuate the demand. Moreover, Efficient urban planning and better transportation infrastructure can balance supply demand.
+## Suggestions and Future scope
+Efficient urban planning and better transportation infrastructure like broadening of roads can reduce accidents. This project focuses on the dataset of a city, but in future we can imply this methodology to predict the accident severity of a state or entire country. We can also predict number of accidents on a given freeway and the duration of accidents. 
+
