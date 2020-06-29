@@ -45,8 +45,6 @@ i2hsev<-subset(incidents,incidents$Severity=='2')  #subsetting only high severit
   
 Finally, we visualize the data.  We save our plot as a `.jpeg` image:
 ```
-
-The output from this code is shown below:
 ![Image of Plot](images/map_sev.jpg)
 
 #### Best Model Result
