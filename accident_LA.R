@@ -91,7 +91,7 @@ plot(laaccident$Severity, ylim = c(0, 30000), main = "Response variable", col = 
 incidents <- finaldatawithlatandlong
 #install.packages("ggmap")
 library(ggmap)
-ggmap::register_google(key = "AIzaSyCK_MlkB3zLV8Yz-T-8yOIaNqVUNVpn_do")
+ggmap::register_google(key = "YOUR KEY")
 
 #taking Los angeles map from googlemaps and plotting all datapoints in the map
 p <- ggmap(get_googlemap(maptype="terrain",zoom=11,center = c(lon = -118.28904, lat = 34.078926)))
