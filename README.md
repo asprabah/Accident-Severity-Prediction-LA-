@@ -47,6 +47,9 @@ Finally, we visualize the data.  We save our plot as a `.jpeg` image:
 ```
 ![Image of Plot](images/map_sev.jpg)
 
+#### Model Framework
+![Image of Plot](images/framework.jpg)
+
 #### Best Model Result
 
 ```
