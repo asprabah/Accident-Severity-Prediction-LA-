@@ -1,6 +1,6 @@
 # Accident-Severity-Prediction-LA
 
-Author:  **Aravindh Siddharth Prabaharan**
+Authors:  **Aravindh Siddharth Prabaharan**, **Abinesh Senthil Kumar**
 Credits: [Sobhan Moosavi](https://smoosavi.org/)
 
 ---
